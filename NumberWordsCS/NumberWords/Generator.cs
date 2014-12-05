@@ -75,13 +75,15 @@
 
       for (int i = 0; i < inputInThreeDigitSections.Count; i++)
       {
-        result = AddSpaceBeforeSection(inputInThreeDigitSections[i], i, result);
+        int currentValue = inputInThreeDigitSections[i];
+
+        result = this.AddSpaceBeforeSection(currentValue, i, result);
 
         if (inputInThreeDigitSections[i] != 0)
         {
-          int hundredsColumn = inputInThreeDigitSections[i] / 100;
-          int tensColumn = (inputInThreeDigitSections[i] - (hundredsColumn * 100)) / 10;
-          int unitsColumn = inputInThreeDigitSections[i] - (hundredsColumn * 100) - (tensColumn * 10);
+          int hundredsColumn = currentValue / 100;
+          int tensColumn = (currentValue - (hundredsColumn * 100)) / 10;
+          int unitsColumn = currentValue - (hundredsColumn * 100) - (tensColumn * 10);
 
           var hundredsGenerator = new HundredsGenerator();
           string numberPartOfResult = hundredsGenerator.Generate(hundredsColumn, tensColumn, unitsColumn);
