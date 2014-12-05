@@ -75,41 +75,54 @@
 
       for (int i = 0; i < inputInThreeDigitSections.Count; i++)
       {
-        if (i != 0 && inputInThreeDigitSections[i] != 0)
+        result = AddSpaceBeforeSection(inputInThreeDigitSections[i], i, result);
+
+        if (inputInThreeDigitSections[i] != 0)
         {
-          result += " ";
-        }
+          int hundredsColumn = inputInThreeDigitSections[i] / 100;
+          int tensColumn = (inputInThreeDigitSections[i] - (hundredsColumn * 100)) / 10;
+          int unitsColumn = inputInThreeDigitSections[i] - (hundredsColumn * 100) - (tensColumn * 10);
 
-        var hundredsGenerator = new HundredsGenerator();
-        if (inputInThreeDigitSections[i] == 0)
-        {
-          continue;
-        }
-
-        int hundredsColumn = inputInThreeDigitSections[i] / 100;
-        int tensColumn = (inputInThreeDigitSections[i] - (hundredsColumn * 100)) / 10;
-        int unitsColumn = inputInThreeDigitSections[i] - (hundredsColumn * 100) - (tensColumn * 10);
-
-        string numberPartOfResult = hundredsGenerator.Generate(hundredsColumn, tensColumn, unitsColumn);
-
-        string largenumber = this.GetLargeNumberName(inputInThreeDigitSections.Count - 1 - i);
-
-        if (string.IsNullOrWhiteSpace(largenumber) && i == inputInThreeDigitSections.Count - 1 && inputInThreeDigitSections.Count > 1)
-        {
-          result += "and " + numberPartOfResult;
-        }
-        else
-        {
-          result += numberPartOfResult;
-        }
-
-        if (!string.IsNullOrWhiteSpace(largenumber))
-        {
-          result += " " + largenumber;
+          var hundredsGenerator = new HundredsGenerator();
+          string numberPartOfResult = hundredsGenerator.Generate(hundredsColumn, tensColumn, unitsColumn);
+          result = this.RecombineSections(result, numberPartOfResult, i, inputInThreeDigitSections.Count);
         }
       }
 
       return result;
+    }
+
+    private string AddSpaceBeforeSection(int value, int currentSection, string originalString)
+    {
+      string result = originalString;
+
+      if (currentSection != 0 && value != 0)
+      {
+        result += " ";
+      }
+
+      return result;
+    }
+
+    private string RecombineSections(string originalValue, string word, int currentSection, int numberOfSections)
+    {
+      string largenumber = this.GetLargeNumberName(numberOfSections - currentSection - 1);
+
+      if (string.IsNullOrWhiteSpace(largenumber) && currentSection == numberOfSections - 1 && numberOfSections > 1)
+      {
+        originalValue += "and " + word;
+      }
+      else
+      {
+        originalValue += word;
+      }
+
+      if (!string.IsNullOrWhiteSpace(largenumber))
+      {
+        originalValue += " " + largenumber;
+      }
+
+      return originalValue;
     }
   }
 }
