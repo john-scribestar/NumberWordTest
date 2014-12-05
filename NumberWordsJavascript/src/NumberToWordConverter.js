@@ -1,5 +1,4 @@
-// At the moment
-var generator = function (number) {
+var numberToWordConverter = function (number) {
 
     // Equivalent To C# HundredsGenerator
     var wordifyHundreds = function (hundreds, tens, units) {
@@ -74,7 +73,6 @@ var generator = function (number) {
                 return twentyToNinetyTens().getWord(tens) + " " + unitsAndTeens().getWord(unit)
             };
 
-
             return wordify(tens, units);
         };
 
@@ -126,41 +124,44 @@ var generator = function (number) {
     var wordify = function (inputInThreeDigitSections) {
 
         var result = "";
+        var hundredsColumn;
+        var tensColumn;
+        var unitsColumn;
+        var numberPartOfResult;
+
+        var recombine = function (originalValue, number,currentSection,numberOfSections) {
+            var largeNumberName;
+            largeNumberName = getLargeNumberName( numberOfSections - currentSection -1 );
+            if (largeNumberName === undefined && currentSection === numberOfSections -1 && numberOfSections  > 1) {
+                originalValue += "and " + number;
+            } else {
+                originalValue += numberPartOfResult;
+            }
+
+            if (largeNumberName !== undefined) {
+                originalValue += " " + largeNumberName;
+            }
+
+            return originalValue;
+        };
 
         for (var i = 0; i < inputInThreeDigitSections.length; i++) {
-            var hundredsColumn;
-            var tensColumn;
-            var unitsColumn;
-            var numberPartOfResult;
-            var largeNumberName;
-
             if (i !== 0 && inputInThreeDigitSections[i] !== 0) {
                 result += " ";
             }
 
-            if (inputInThreeDigitSections[i] === 0) {
-                continue;
+            if (inputInThreeDigitSections[i] !== 0) {
+                hundredsColumn = Math.floor(inputInThreeDigitSections[i] / 100);
+                tensColumn = Math.floor((inputInThreeDigitSections[i] - (hundredsColumn * 100)) / 10);
+                unitsColumn = inputInThreeDigitSections[i] - (hundredsColumn * 100) - (tensColumn * 10);
+
+                numberPartOfResult = wordifyHundreds(hundredsColumn, tensColumn, unitsColumn);
+                largeNumberName = getLargeNumberName(inputInThreeDigitSections.length - 1 - i);
+                result = recombine(result, numberPartOfResult, i, inputInThreeDigitSections.length);
             }
-            hundredsColumn = Math.floor(inputInThreeDigitSections[i] / 100);
-            tensColumn = Math.floor((inputInThreeDigitSections[i] - (hundredsColumn * 100)) / 10);
-            unitsColumn = inputInThreeDigitSections[i] - (hundredsColumn * 100) - (tensColumn * 10);
-
-            numberPartOfResult = wordifyHundreds(hundredsColumn, tensColumn, unitsColumn);
-
-            if (numberPartOfResult === undefined && i === inputInThreeDigitSections.length - 1 && inputInThreeDigitSections.length > 1) {
-                result += "and " + numberPartOfResult;
-            } else {
-                result += numberPartOfResult;
-            }
-
-            largeNumberName = getLargeNumberName(inputInThreeDigitSections.length - 1 - i);
-
-            if (largeNumberName !== undefined) {
-                result += " " + largeNumberName;
-            }
-
-            return result;
         }
+
+        return result;
     };
 
     // Basically above is defining classes and below is executing code
@@ -180,9 +181,11 @@ var generator = function (number) {
         return 'zero';
     }
 
+    // This is the actual working part of this function
     number = Math.abs(number);
 
     var inputInThreeDigitSections = splitNumberInToThreeDigitSections(number);
+
     result = wordify(inputInThreeDigitSections);
 
     if (inputIsNegative) {
@@ -191,7 +194,3 @@ var generator = function (number) {
 
     return result;
 };
-var resulting = generator(1000);
-
-var whatsgoingOn = resulting;
-
