@@ -6,4 +6,4 @@ Started new Job and asked to complete programming test in c# and javascript.
 
 These are the results.
 
-I hadent ever written any javascript before this really.
+I hadn't ever written any javascript before this really.
